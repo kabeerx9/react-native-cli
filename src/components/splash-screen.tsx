@@ -116,7 +116,7 @@ export const SplashScreen = () => {
           <View style={styles.spinnerInner} />
         </Animated.View>
 
-        <Text style={styles.loadingText}>Loading Discussion Dashboard</Text>
+        <Text style={styles.loadingText}>Kabeer's Health Tracker</Text>
 
         {/* Progress bars */}
         <View style={styles.progressContainer}>

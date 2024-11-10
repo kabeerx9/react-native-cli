@@ -1,47 +1,32 @@
 // App.tsx
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createDrawerNavigator} from '@react-navigation/drawer';
 import {Button} from '@react-navigation/elements';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {Text} from 'react-native';
-import DetailsScreen from './components/details-screen';
-import {FirstTabScreen} from './components/firsttab-screen';
-import HomeScreen from './components/home-screen';
-import {SignInScreen} from './components/signin-screen';
-import {SplashScreen} from './components/splash-screen';
-import {AuthProvider, useAuth} from './context/auth-context';
-
-// Existing screens
-
-const SecondTabScreen = () => <Text>Second Tab Screen</Text>;
-const FirstDrawerScreen = () => <Text>First Drawer Screen</Text>;
-const SecondDrawerScreen = ({route}: any) => {
-  const name = route?.params?.name ?? 'No name';
-  return <Text>Second Drawer Screen {name}</Text>;
-};
+import {DefaultTheme, PaperProvider} from 'react-native-paper';
+import {SignInScreen} from './src/components/signin-screen';
+import {SplashScreen} from './src/components/splash-screen';
+import {AuthProvider, useAuth} from './src/context/auth-context';
+import GymStack from './src/navigation/GymStack';
+import GlucoseTrackerScreen from './src/screens/Tabs/glucose-tracker';
 
 // Navigation Components
 const Stack = createStackNavigator();
+
 const Tab = createBottomTabNavigator();
-const Drawer = createDrawerNavigator();
 
-// Tab Navigator
-const TabNavigator = () => (
-  <Tab.Navigator screenOptions={{headerShown: false}}>
-    <Tab.Screen name="First" component={FirstTabScreen} />
-    <Tab.Screen name="Second" component={SecondTabScreen} />
-  </Tab.Navigator>
-);
-
-// Drawer Navigator
-const DrawerNavigator = () => (
-  <Drawer.Navigator>
-    <Drawer.Screen name="First" component={FirstDrawerScreen} />
-    <Drawer.Screen name="Second" component={SecondDrawerScreen} />
-  </Drawer.Navigator>
-);
+const HomeTabNavigator = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Tab.Screen name="Gym" component={GymStack} />
+      <Tab.Screen name="Glucose" component={GlucoseTrackerScreen} />
+    </Tab.Navigator>
+  );
+};
 
 const Navigation = () => {
   const {isLoading, isSignedIn, signOut} = useAuth();
@@ -86,35 +71,31 @@ const Navigation = () => {
       ) : (
         <>
           {/* Main app screens when signed in */}
-          <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            initialParams={{name: 'Niggesh'}}
-          />
-          <Stack.Screen name="Details" component={DetailsScreen} />
-          <Stack.Screen
-            name="TabScreen"
-            component={TabNavigator}
-            options={{title: 'Tabs'}}
-          />
-          <Stack.Screen
-            name="DrawerScreen"
-            component={DrawerNavigator}
-            options={{headerShown: false}}
-          />
+          <Stack.Screen name="Home" component={HomeTabNavigator} />
         </>
       )}
     </Stack.Navigator>
   );
 };
 
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: 'tomato',
+    secondary: 'yellow',
+  },
+};
+
 const App = () => {
   return (
-    <AuthProvider>
-      <NavigationContainer>
-        <Navigation />
-      </NavigationContainer>
-    </AuthProvider>
+    <PaperProvider theme={theme}>
+      <AuthProvider>
+        <NavigationContainer>
+          <Navigation />
+        </NavigationContainer>
+      </AuthProvider>
+    </PaperProvider>
   );
 };
 

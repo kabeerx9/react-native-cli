@@ -1,118 +1,118 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
+// App.tsx
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {Button} from '@react-navigation/elements';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {Text} from 'react-native';
+import DetailsScreen from './components/details-screen';
+import {FirstTabScreen} from './components/firsttab-screen';
+import HomeScreen from './components/home-screen';
+import {SignInScreen} from './components/signin-screen';
+import {SplashScreen} from './components/splash-screen';
+import {AuthProvider, useAuth} from './context/auth-context';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+// Existing screens
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const SecondTabScreen = () => <Text>Second Tab Screen</Text>;
+const FirstDrawerScreen = () => <Text>First Drawer Screen</Text>;
+const SecondDrawerScreen = ({route}: any) => {
+  const name = route?.params?.name ?? 'No name';
+  return <Text>Second Drawer Screen {name}</Text>;
+};
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+// Navigation Components
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+// Tab Navigator
+const TabNavigator = () => (
+  <Tab.Navigator screenOptions={{headerShown: false}}>
+    <Tab.Screen name="First" component={FirstTabScreen} />
+    <Tab.Screen name="Second" component={SecondTabScreen} />
+  </Tab.Navigator>
+);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+// Drawer Navigator
+const DrawerNavigator = () => (
+  <Drawer.Navigator>
+    <Drawer.Screen name="First" component={FirstDrawerScreen} />
+    <Drawer.Screen name="Second" component={SecondDrawerScreen} />
+  </Drawer.Navigator>
+);
+
+// Main App Stack (When Signed In)
+const MainStack = () => {
+  const {signOut} = useAuth();
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <Stack.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        headerRight: () => <Button onPress={signOut}>Sign Out</Button>,
+      }}>
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        initialParams={{name: 'Niggesh'}}
+        options={({route}) => ({
+          title: route?.params?.name || 'Home',
+        })}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <Stack.Screen
+        name="Details"
+        component={DetailsScreen}
+        options={{title: 'Details'}}
+      />
+      <Stack.Screen
+        name="TabScreen"
+        component={TabNavigator}
+        options={{
+          title: 'Tabs',
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="DrawerScreen"
+        component={DrawerNavigator}
+        options={{
+          title: 'Drawer',
+          headerShown: false,
+        }}
+      />
+    </Stack.Navigator>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+const Navigation = () => {
+  const {isLoading, isSignedIn} = useAuth();
+
+  // Show splash screen while checking auth state
+  if (isLoading || isSignedIn === null) {
+    return <SplashScreen />;
+  }
+
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      {isSignedIn ? (
+        <Stack.Screen name="Main" component={MainStack} />
+      ) : (
+        <Stack.Screen name="SignIn" component={SignInScreen} />
+      )}
+    </Stack.Navigator>
+  );
+};
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <NavigationContainer>
+        <Navigation />
+      </NavigationContainer>
+    </AuthProvider>
+  );
+};
 
 export default App;

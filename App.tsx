@@ -87,7 +87,7 @@ const MainStack = () => {
 };
 
 const Navigation = () => {
-  const {isLoading, isSignedIn} = useAuth();
+  const {isLoading, isSignedIn, signOut} = useAuth();
 
   // Show splash screen while checking auth state
   if (isLoading || isSignedIn === null) {
@@ -95,11 +95,57 @@ const Navigation = () => {
   }
 
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
-      {isSignedIn ? (
-        <Stack.Screen name="Main" component={MainStack} />
-      ) : (
+    <Stack.Navigator
+      screenOptions={({route}) => {
+        // Define default options here
+        let options = {
+          headerShown: false, // Default to hiding headers
+        };
+
+        // Override options for specific screens when logged in
+        if (isSignedIn) {
+          options.headerShown = true;
+
+          // Show the sign-out button only on screens in the main app flow
+          if (route.name === 'Home') {
+            options.headerRight = () => (
+              <Button onPress={signOut} title="Sign Out" />
+            );
+          }
+
+          // Set specific header titles for other screens
+          if (route.name === 'Home') {
+            options.title = route?.params?.name || 'Home';
+          } else if (route.name === 'Details') {
+            options.title = 'Details';
+          }
+        }
+
+        return options;
+      }}>
+      {!isSignedIn ? (
+        // Authentication Screen (when signed out)
         <Stack.Screen name="SignIn" component={SignInScreen} />
+      ) : (
+        <>
+          {/* Main app screens when signed in */}
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            initialParams={{name: 'Niggesh'}}
+          />
+          <Stack.Screen name="Details" component={DetailsScreen} />
+          <Stack.Screen
+            name="TabScreen"
+            component={TabNavigator}
+            options={{title: 'Tabs'}}
+          />
+          <Stack.Screen
+            name="DrawerScreen"
+            component={DrawerNavigator}
+            options={{headerShown: false}}
+          />
+        </>
       )}
     </Stack.Navigator>
   );

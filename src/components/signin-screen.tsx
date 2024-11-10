@@ -9,6 +9,7 @@ import {
   TextInput,
   Title,
 } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useAuth} from '../context/auth-context';
 
 export function SignInScreen() {
@@ -31,16 +32,23 @@ export function SignInScreen() {
 
   return (
     <ScrollView
-      contentContainerStyle={{flex: 1, justifyContent: 'center', padding: 16}}
+      contentContainerStyle={{
+        flex: 1,
+        justifyContent: 'center',
+        paddingHorizontal: 24,
+        paddingVertical: 16,
+      }}
       keyboardShouldPersistTaps="handled">
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <Card style={{borderRadius: 12, padding: 16, elevation: 5}}>
+        <Card style={{borderRadius: 12, padding: 24, elevation: 5}}>
           <Card.Content>
             <Title
               style={{
                 textAlign: 'center',
-                marginBottom: 16,
+                marginBottom: 20,
                 fontWeight: 'bold',
+                fontSize: 28,
+                color: '#6200ee',
               }}>
               Sign In
             </Title>
@@ -49,29 +57,54 @@ export function SignInScreen() {
               label="Email"
               value={email}
               onChangeText={setEmail}
-              style={{marginBottom: 16}}
+              style={{
+                marginBottom: 16,
+                backgroundColor: '#fff',
+              }}
               autoCapitalize="none"
               keyboardType="email-address"
               autoCompleteType="email"
-              left={<TextInput.Icon name="email" />}
+              left={
+                <TextInput.Icon name={() => <Icon name="email" size={20} />} />
+              }
               mode="outlined"
+              theme={{
+                colors: {primary: '#6200ee', underlineColor: 'transparent'},
+              }}
             />
             <TextInput
               label="Password"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
-              style={{marginBottom: 16}}
-              left={<TextInput.Icon name="lock" />}
+              style={{
+                marginBottom: 24,
+                backgroundColor: '#fff',
+              }}
+              left={
+                <TextInput.Icon name={() => <Icon name="lock" size={20} />} />
+              }
               mode="outlined"
+              theme={{
+                colors: {primary: '#6200ee', underlineColor: 'transparent'},
+              }}
             />
+
             <Button
               mode="contained"
               onPress={onSignInPress}
               loading={loading}
-              disabled={loading || !email || !password}
-              style={{paddingVertical: 6, marginBottom: 16}}
-              contentStyle={{flexDirection: 'row', justifyContent: 'center'}}>
+              disabled={loading}
+              style={{
+                marginBottom: 24,
+                borderRadius: 30,
+                backgroundColor: '#6200ee',
+              }}
+              contentStyle={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                paddingVertical: 10,
+              }}>
               {loading ? (
                 <ActivityIndicator size="small" color="white" />
               ) : (
@@ -88,11 +121,15 @@ export function SignInScreen() {
           </Card.Content>
         </Card>
       </TouchableWithoutFeedback>
+
       <Snackbar
         visible={visible}
         onDismiss={() => setVisible(false)}
         duration={Snackbar.DURATION_SHORT}
-        style={{backgroundColor: 'tomato'}}>
+        style={{
+          backgroundColor: '#d32f2f',
+          borderRadius: 8,
+        }}>
         Error signing in. Please check your credentials.
       </Snackbar>
     </ScrollView>

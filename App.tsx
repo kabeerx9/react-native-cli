@@ -43,49 +43,6 @@ const DrawerNavigator = () => (
   </Drawer.Navigator>
 );
 
-// Main App Stack (When Signed In)
-const MainStack = () => {
-  const {signOut} = useAuth();
-
-  return (
-    <Stack.Navigator
-      initialRouteName="Home"
-      screenOptions={{
-        headerRight: () => <Button onPress={signOut}>Sign Out</Button>,
-      }}>
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        initialParams={{name: 'Niggesh'}}
-        options={({route}) => ({
-          title: route?.params?.name || 'Home',
-        })}
-      />
-      <Stack.Screen
-        name="Details"
-        component={DetailsScreen}
-        options={{title: 'Details'}}
-      />
-      <Stack.Screen
-        name="TabScreen"
-        component={TabNavigator}
-        options={{
-          title: 'Tabs',
-          headerShown: true,
-        }}
-      />
-      <Stack.Screen
-        name="DrawerScreen"
-        component={DrawerNavigator}
-        options={{
-          title: 'Drawer',
-          headerShown: false,
-        }}
-      />
-    </Stack.Navigator>
-  );
-};
-
 const Navigation = () => {
   const {isLoading, isSignedIn, signOut} = useAuth();
 

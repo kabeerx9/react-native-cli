@@ -1,18 +1,22 @@
-// WorkoutCategoriesScreen.tsx
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Card} from 'react-native-paper';
+import {MUSCLE_GROUPS} from '../../../constants/contstants';
 
-const WorkoutCategoriesScreen = () => {
-  const categories = ['Biceps', 'Chest', 'Back', 'Legs', 'Shoulders'];
-
+const WorkoutCategoriesScreen = ({navigation}: any) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Select a Workout Category</Text>
-      {categories.map(category => (
-        <Card style={styles.card} key={category}>
-          <TouchableOpacity onPress={() => {}}>
-            <Text style={styles.cardText}>{category}</Text>
+      {MUSCLE_GROUPS.map(category => (
+        <Card style={styles.card} key={category.id}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('WorkoutDetails', {
+                muscleGroupName: category.name,
+                muscleGroupId: category.id,
+              });
+            }}>
+            <Text style={styles.cardText}>{category.name}</Text>
           </TouchableOpacity>
         </Card>
       ))}
